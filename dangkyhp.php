@@ -12,16 +12,13 @@ if (empty($maSoSV)) {
     exit();
 }
 
-// Lấy thông tin sinh viên
 $sql_sv = "SELECT HoTen, NgaySinh, MaNganh FROM SinhVien WHERE MaSV = '$maSoSV'";
 $result_sv = $conn->query($sql_sv);
 $sv_info = $result_sv->fetch_assoc();
 
-// Lấy danh sách học phần từ bảng HocPhan
 $sql = "SELECT MaHP, TenHP, SoTinChi FROM HocPhan";
 $result = $conn->query($sql);
 
-// Xử lý thêm học phần vào session
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mahp'])) {
     $mahp = $_POST['mahp'];
     $tinchi = $_POST['tinchi'];
@@ -35,17 +32,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mahp'])) {
     }
 }
 
-// Xử lý xóa học phần khỏi session
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_mahp'])) {
     unset($_SESSION['registered_courses'][$_POST['remove_mahp']]);
 }
 
-// Xử lý xóa tất cả học phần
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clear_all'])) {
     $_SESSION['registered_courses'] = [];
 }
 
-// Xử lý lưu học phần vào database sau xác nhận
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_courses'])) {
+    $_SESSION['confirm_save'] = true;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_save'])) {
     if (!empty($_SESSION['registered_courses'])) {
         $ngayDK = date("Y-m-d");
@@ -57,11 +55,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_save'])) {
                 $conn->query($sql_insert_ctdk);
             }
             $_SESSION['registered_courses'] = [];
+            unset($_SESSION['confirm_save']);
             echo "<p>Đã lưu đăng ký học phần thành công.</p>";
         } else {
             echo "<p>Lỗi khi lưu đăng ký học phần: " . $conn->error . "</p>";
         }
     }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_save'])) {
+    unset($_SESSION['confirm_save']);
 }
 
 $totalCredits = array_sum($_SESSION['registered_courses'] ?? []);
@@ -120,12 +123,11 @@ $totalCredits = array_sum($_SESSION['registered_courses'] ?? []);
     </table>
     <form method="post">
         <button type="submit" name="clear_all">Xóa tất cả</button>
-        <button type="submit" name="confirm_save">Lưu đăng ký</button>
+        <button type="submit" name="save_courses">Lưu đăng ký</button>
     </form>
 </div>
 
-<!-- Xác nhận thông tin trước khi lưu -->
-<?php if (isset($_POST['save_courses'])): ?>
+<?php if (isset($_SESSION['confirm_save'])): ?>
     <div class="container">
         <h1 class="page-title">Thông tin Đăng ký</h1>
         <table border="1" width="100%">
@@ -137,7 +139,7 @@ $totalCredits = array_sum($_SESSION['registered_courses'] ?? []);
         </table>
         <form method="post">
             <button type="submit" name="confirm_save">Xác nhận</button>
-            <button type="submit">Hủy</button>
+            <button type="submit" name="cancel_save">Hủy</button>
         </form>
     </div>
 <?php endif; ?>

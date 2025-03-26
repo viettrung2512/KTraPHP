@@ -78,6 +78,6 @@ function displayHeader() {
             </ul>
         </div>
         <div class="container">
-           <h1 class="page-title">TRANG SINH VIÊN</h1>'; 
+           <h1 class="page-title"></h1>'; 
 }
 ?>

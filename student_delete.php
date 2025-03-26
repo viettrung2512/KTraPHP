@@ -33,6 +33,17 @@ if ($result->num_rows == 1) {
                 <span class="label">Ngành học:</span>
                 <span class="value">' . $row['TenNganh'] . '</span>
             </div>
+
+            <div class="info-row">
+                <span class="label">Hình ảnh:</span>';
+                
+    if (!empty($row['Hinh'])) {
+        echo '<img src="images/' . $row['Hinh'] . '" class="student-img" alt="Student Photo">';
+    } else {
+        echo '<p>Chưa có hình ảnh</p>';
+    }
+
+    echo '</div>
         </div>
         
         <div class="actions">
@@ -67,6 +78,7 @@ if ($result->num_rows == 1) {
         .info-row {
             margin-bottom: 10px;
             display: flex;
+            align-items: center;
         }
         .label {
             font-weight: bold;
@@ -74,6 +86,14 @@ if ($result->num_rows == 1) {
         }
         .value {
             flex: 1;
+        }
+        .student-img {
+            max-width: 150px;
+            max-height: 150px;
+            border: 1px solid #ddd;
+            padding: 5px;
+            display: block;
+            margin-left: 10px;
         }
         .actions {
             margin-top: 20px;

@@ -83,9 +83,8 @@ displayFooter();
         background-color: #f1f1f1;
     }
     .student-img {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
+        width: 100px;
+        height: 100px;
         object-fit: cover;
     }
     .action-links a {
